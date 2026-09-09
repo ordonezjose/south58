@@ -33,26 +33,28 @@
   --container-content: 1320px;
 }
 
-html,
-body {
-  background: var(--color-stage);
-  color: var(--color-ink);
-}
+@layer base {
+  html,
+  body {
+    background: var(--color-stage);
+    color: var(--color-ink);
+  }
 
-* {
-  box-sizing: border-box;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-a {
-  color: var(--color-red-hover);
-}
-a:hover {
-  color: var(--color-red);
-}
+  a {
+    color: var(--color-red-hover);
+  }
+  a:hover {
+    color: var(--color-red);
+  }
 
-::selection {
-  background: var(--color-red);
-  color: #fff;
+  ::selection {
+    background: var(--color-red);
+    color: #fff;
+  }
 }
 
 /* Placeholder art for media not yet supplied — swap for real photo/video. */

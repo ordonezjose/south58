@@ -42,8 +42,10 @@ const isActive = (href: string) =>
         <a
           href={item.href}
           class:list={[
-            "hover:text-white transition-colors",
-            isActive(item.href) ? "text-white" : "text-ink-muted",
+            "pb-[3px] border-b-2 hover:text-white transition-colors",
+            isActive(item.href)
+              ? "text-white border-red"
+              : "text-ink-muted border-transparent",
           ]}
         >
           {item.label}
