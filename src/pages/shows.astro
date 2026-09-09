@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const allShows = (await getCollection("shows")).sort(
+  (a, b) => a.data.date.getTime() - b.data.date.getTime()
+);
+const now = new Date();
+const upcoming = allShows.filter((s) => s.data.date >= now);
+const past = allShows.filter((s) => s.data.date < now).reverse();
+
+const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" });
+---
+<Layout title="Shows">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="h-1 w-[120px] bg-red mb-6"></div>
+    <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Shows</h1>
+
+    <!--
+      Upcoming / Past dates tabs — pure CSS, no JavaScript. Two radio inputs
+      (visually hidden) drive which panel is visible via the peer-checked
+      variant; both panels are direct siblings of the inputs so the sibling
+      selector applies.
+    -->
+    <div class="mt-8 flex flex-wrap gap-6">
+      <input type="radio" id="tab-upcoming" name="show-tab" class="peer/upcoming hidden" checked />
+      <input type="radio" id="tab-past" name="show-tab" class="peer/past hidden" />
+
+      <label
+        for="tab-upcoming"
+        class="cursor-pointer pb-1.5 border-b-2 border-transparent font-mono text-[11px] tracking-[0.18em] uppercase text-ink-muted peer-checked/upcoming:text-white peer-checked/upcoming:border-red"
+      >
+        Upcoming
+      </label>
+      <label
+        for="tab-past"
+        class="cursor-pointer pb-1.5 border-b-2 border-transparent font-mono text-[11px] tracking-[0.18em] uppercase text-ink-muted peer-checked/past:text-white peer-checked/past:border-red"
+      >
+        Past dates
+      </label>
+
+      <div class="hidden peer-checked/upcoming:block basis-full border border-line mt-2">
+        {upcoming.length === 0 && (
+          <p class="p-6 text-ink-muted text-sm">No shows on the books yet — check back soon.</p>
+        )}
+        {upcoming.map((show) => (
+          <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            <div class="max-w-[180px]">
+              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-red">{dateFmt.format(show.data.date)}</div>
+              <div class="font-mono text-[11px] text-ink-dim mt-1">{show.data.time}</div>
+            </div>
+            <div class="min-w-0">
+              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
+              <div class="text-sm text-ink-muted mt-0.5">{show.data.city}</div>
+            </div>
+            <div class="flex gap-2.5 flex-wrap justify-start">
+              <a href="/bookings" class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white bg-red px-[22px] py-[13px] hover:bg-red-hover transition-colors">RSVP</a>
+            </div>
+          </div>
+        ))}
+        <div class="px-6 py-5.5 flex flex-wrap gap-4 items-center justify-between">
+          <span class="text-[15px] text-ink-muted">Want SOUTH 58 at your venue or private event?</span>
+          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">Request a show</a>
+        </div>
+      </div>
+
+      <div class="hidden peer-checked/past:block basis-full border border-line mt-2">
+        {past.length === 0 && (
+          <p class="p-6 text-ink-muted text-sm">No past shows logged yet.</p>
+        )}
+        {past.map((show) => (
+          <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line opacity-60" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+            <div class="max-w-[180px]">
+              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-ink-muted">{dateFmt.format(show.data.date)}</div>
+              <div class="font-mono text-[11px] text-ink-dim mt-1">{show.data.time}</div>
+            </div>
+            <div class="min-w-0">
+              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
+              <div class="text-sm text-ink-muted mt-0.5">{show.data.city}</div>
+            </div>
+            <span class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">PLAYED</span>
+          </div>
+        ))}
+        <div class="px-6 py-5.5 flex flex-wrap gap-4 items-center justify-between">
+          <span class="text-[15px] text-ink-muted">Want SOUTH 58 at your venue or private event?</span>
+          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">Request a show</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,47 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getEntry } from "astro:content";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
+
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+const umamiScriptUrl = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} · {site.data.bandName}</title>
+    <meta name="description" content={description ?? site.data.tagline} />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    {umamiWebsiteId && umamiScriptUrl && (
+      <script
+        is:inline
+        defer
+        src={umamiScriptUrl}
+        data-website-id={umamiWebsiteId}
+      ></script>
+    )}
+  </head>
+  <body class="bg-stage text-ink font-sans min-h-screen overflow-x-hidden">
+    <Header site={site.data} currentPath={Astro.url.pathname} />
+    <main>
+      <slot />
+    </main>
+    <Footer site={site.data} />
+  </body>
+</html>

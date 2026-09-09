@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+/*
+  SOUTH 58 design tokens — see project/Design System.dc.html in the repo root
+  for the source design system this maps to (colors, type scale, spacing, motion).
+  Tailwind v4 is CSS-first: values declared here become utilities automatically
+  (e.g. --color-stage generates bg-stage / text-stage / border-stage, etc.).
+*/
+@theme {
+  --color-stage: #08090a;
+  --color-surface: #101114;
+  --color-raised: #17181c;
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-strong: #22242a;
+  --color-red: #ed2024;
+  --color-red-hover: #ff4448;
+  --color-red-active: #c4151a;
+  --color-ink: #f2f3f5;
+  --color-ink-soft: #c9cbd1;
+  --color-ink-muted: #9a9da6;
+  --color-ink-dim: #6b6e76;
+  --color-ink-dimmer: #5a5d64;
+
+  --font-display: "Archivo Black", sans-serif;
+  --font-condensed: "Barlow Condensed", sans-serif;
+  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 900px;
+  --breakpoint-lg: 1200px;
+
+  --container-content: 1320px;
+}
+
+html,
+body {
+  background: var(--color-stage);
+  color: var(--color-ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-red-hover);
+}
+a:hover {
+  color: var(--color-red);
+}
+
+::selection {
+  background: var(--color-red);
+  color: #fff;
+}
+
+/* Placeholder art for media not yet supplied — swap for real photo/video. */
+.placeholder-bg {
+  background-image: repeating-linear-gradient(
+    135deg,
+    #15161a 0 10px,
+    #0e0f12 10px 20px
+  );
+}

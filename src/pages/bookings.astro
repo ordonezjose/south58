@@ -1,0 +1,72 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getEntry } from "astro:content";
+
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
+
+// No form backend is wired up yet — see README "Bookings form" section.
+// Point this at a form service (Formspree, Web3Forms) or a Vercel Function.
+const formAction = import.meta.env.PUBLIC_BOOKING_FORM_ACTION;
+
+const fieldClass =
+  "bg-raised border border-line-strong text-ink font-sans text-base px-4 py-3.5 outline-none transition-colors focus:border-red min-w-0";
+const labelClass = "font-condensed font-semibold text-[13px] tracking-[0.14em] uppercase text-ink-muted";
+---
+<Layout title="Bookings">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="grid gap-14 items-start" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      <div>
+        <div class="h-1 w-[120px] bg-red mb-6"></div>
+        <h1 class="font-display uppercase text-[clamp(40px,6vw,72px)] leading-[0.9] tracking-[-0.03em] m-0">Bookings</h1>
+        <p class="text-[clamp(18px,2.2vw,22px)] text-ink-soft mt-5.5 leading-snug max-w-[460px]">{site.data.bookings.intro}</p>
+        <div class="mt-9 flex flex-col gap-4.5 font-mono text-xs tracking-[0.14em] text-ink-muted">
+          <div><span class="text-red">EMAIL</span> · <a href={`mailto:${site.data.email}`}>{site.data.email}</a></div>
+          <div><span class="text-red">PHONE</span> · {site.data.phone}</div>
+          <div><span class="text-red">BASED IN</span> · {site.data.location}</div>
+        </div>
+      </div>
+
+      {formAction ? (
+        <form method="POST" action={formAction} class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <label class="flex flex-col gap-2">
+            <span class={labelClass}>Your name</span>
+            <input type="text" name="name" placeholder="Jane Doe" required class={fieldClass} />
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class={labelClass}>Email</span>
+            <input type="email" name="email" placeholder="you@venue.com" required class={fieldClass} />
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class={labelClass}>Phone</span>
+            <input type="tel" name="phone" placeholder="786-000-0000" class={fieldClass} />
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class={labelClass}>Event date</span>
+            <input type="text" name="date" placeholder="MM / DD / YYYY" class={fieldClass} />
+          </label>
+          <label class="flex flex-col gap-2 col-span-full">
+            <span class={labelClass}>Tell us about the event</span>
+            <textarea name="details" rows="5" placeholder="Venue, city, set length, budget range" class:list={[fieldClass, "resize-y"]}></textarea>
+          </label>
+          <label class="flex flex-col gap-2 col-span-full">
+            <span class={labelClass}>How did you hear about {site.data.bandName}?</span>
+            <input type="text" name="source" placeholder="Saw us live, referral, Instagram…" class={fieldClass} />
+          </label>
+          <div class="col-span-full flex flex-wrap gap-3.5 items-center">
+            <button type="submit" class="font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red border-0 px-8 py-4 cursor-pointer hover:bg-red-hover transition-colors">Send request</button>
+            <span class="text-[13px] text-ink-dim">{site.data.bookings.formNote}</span>
+          </div>
+        </form>
+      ) : (
+        <div class="bg-surface border border-line p-7">
+          <p class="m-0 text-ink-muted leading-relaxed">
+            The booking form isn't wired to a backend yet — set <code class="font-mono text-ink">PUBLIC_BOOKING_FORM_ACTION</code> (see the README) to a form
+            endpoint (Formspree, Web3Forms, a Vercel Function) to turn it on. Until then, reach us directly:
+          </p>
+          <a href={`mailto:${site.data.email}`} class="inline-block mt-4 font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red px-8 py-4 hover:bg-red-hover transition-colors">Email us</a>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,108 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlaceholderMedia from "../components/PlaceholderMedia.astro";
+import { getCollection, getEntry } from "astro:content";
+
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
+
+const allShows = await getCollection("shows");
+const now = new Date();
+const nextShows = allShows
+  .filter((s) => s.data.date >= now)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
+  .slice(0, 3);
+
+const testimonials = (await getCollection("testimonials")).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
+---
+<Layout title="Home">
+  <!-- HERO -->
+  <section class="relative min-h-[min(92vh,820px)] flex flex-col justify-end px-[5vw] pt-[120px] pb-[124px] placeholder-bg">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/95"></div>
+    <div class="relative w-full mx-auto max-w-content">
+      <div class="h-1 w-[180px] bg-red mb-6"></div>
+      <h1 class="font-display uppercase text-[clamp(64px,13vw,150px)] leading-[0.84] tracking-[-0.04em] m-0">
+        {site.data.home.heroLine1}<br />{site.data.home.heroLine2.replace(/\.$/, "")}<span class="text-red">.</span>
+      </h1>
+      <div class="flex flex-wrap items-end justify-between gap-7 mt-7">
+        <p class="m-0 text-[clamp(16px,2vw,19px)] leading-relaxed text-ink-soft max-w-[440px]">
+          {site.data.home.heroSubcopy}
+        </p>
+        <span class="font-mono text-[10px] tracking-[0.2em] text-ink-dimmer">[ FULL-BLEED LOOPED LIVE VIDEO ]</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-[5vw] pb-24 -mt-[70px] relative">
+    <div class="mx-auto max-w-content">
+
+      <!-- ON THE ROAD -->
+      <div class="bg-surface border border-line-strong p-7">
+        <div class="flex items-baseline justify-between gap-4 mb-5.5">
+          <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-red">ON THE ROAD</span>
+          <a href="/shows" class="font-mono text-[11px] tracking-[0.16em] uppercase text-ink hover:text-red-hover transition-colors">All dates →</a>
+        </div>
+        <div class="grid gap-px bg-line-strong" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
+          {nextShows.length === 0 && (
+            <div class="bg-surface p-6 text-ink-muted text-sm">No shows on the books yet — check back soon.</div>
+          )}
+          {nextShows.map((show) => (
+            <div class="bg-surface px-[22px] py-6 flex flex-col gap-2.5">
+              <div class="font-display text-[32px] leading-none">
+                {show.data.date.getDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.data.date).toUpperCase()}</span>
+              </div>
+              <div class="font-condensed font-semibold text-xl uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
+              <div class="text-sm text-ink-muted">{show.data.city} · {show.data.time}</div>
+              <a href="/bookings" class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white mt-1.5 hover:text-red-hover transition-colors">RSVP →</a>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- WHO WE ARE -->
+      <div class="relative mt-16 min-h-[400px] placeholder-bg border border-line flex items-end">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/25"></div>
+        <div class="relative px-10 py-12">
+          <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-red">WHO WE ARE</span>
+          <p class="text-[clamp(20px,2.4vw,26px)] leading-[1.45] mt-4.5 max-w-[520px]">{site.data.home.whoWeAreCopy}</p>
+          <a href="/band" class="inline-block mt-6 font-condensed font-bold text-sm tracking-[0.12em] uppercase border-b border-red pb-0.5 hover:text-white transition-colors">Meet the band</a>
+        </div>
+        <span class="absolute top-4 right-[18px] font-mono text-[10px] tracking-[0.16em] text-ink-dimmer">BACKGROUND IMAGE — FULL ROW</span>
+      </div>
+
+      <!-- FEATURED VIDEO + BOOK US -->
+      <div class="grid gap-5 mt-[72px] items-start" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <PlaceholderMedia note="FEATURED VIDEO 16:9" notePosition="bottom-left" class="aspect-video flex items-center justify-center col-span-2 min-w-0">
+          <div class="w-16 h-16 bg-red flex items-center justify-center text-white text-xl">▶</div>
+        </PlaceholderMedia>
+        <div class="bg-raised border border-line p-7 flex flex-col gap-4">
+          <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-red">BOOK US</span>
+          <p class="m-0 font-condensed font-bold text-[clamp(26px,3vw,34px)] leading-[1.05] uppercase">{site.data.home.bookUsCopy}</p>
+          <a href="/bookings" class="block text-center font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red px-7 py-4 mt-auto hover:bg-red-hover transition-colors">Start a booking</a>
+          <span class="font-mono text-[11px] tracking-[0.12em] text-ink-dim">{site.data.email.toUpperCase()}</span>
+        </div>
+      </div>
+
+      <!-- WHAT PEOPLE SAY -->
+      <div class="mt-20">
+        <div class="flex items-baseline justify-between gap-4 mb-6.5">
+          <h2 class="font-display uppercase text-[clamp(26px,3.4vw,40px)] tracking-[-0.01em] m-0">WHAT PEOPLE SAY</h2>
+        </div>
+        <div class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          {testimonials.map((t) => (
+            <div class="bg-raised border border-line p-7 flex flex-col gap-3.5">
+              <div class="font-display text-3xl text-red leading-none">&ldquo;</div>
+              <p class="m-0 text-lg leading-relaxed">{t.data.quote}</p>
+              <div class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">{t.data.source}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </section>
+</Layout>

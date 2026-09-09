@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const songs = (await getCollection("songs")).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Song list">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="h-1 w-[120px] bg-red mb-6"></div>
+    <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Some of<br />our covers</h1>
+    <p class="text-[17px] text-ink-muted max-w-[520px] mt-4.5 leading-relaxed">Ninety plus songs in rotation. Requests welcome — tell us what your room wants to hear.</p>
+    <div class="grid gap-x-10 mt-10 border-t border-line" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+      {songs.map((song, i) => (
+        <div class="flex items-baseline gap-3.5 py-3.5 border-b border-line">
+          <span class="font-mono text-[11px] text-ink-dimmer min-w-[26px]">{String(i + 1).padStart(2, "0")}</span>
+          <span class="font-condensed font-semibold text-lg uppercase tracking-[0.04em]">{song.data.title}</span>
+        </div>
+      ))}
+    </div>
+    <div class="mt-12 flex flex-wrap gap-4 items-center">
+      <a href="/bookings" class="font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red px-[30px] py-4 hover:bg-red-hover transition-colors">Request a song</a>
+      <span class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">AND MUCH MORE…</span>
+    </div>
+  </div>
+</Layout>

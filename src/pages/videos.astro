@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PlaceholderMedia from "../components/PlaceholderMedia.astro";
+import { getCollection } from "astro:content";
+
+const videos = (await getCollection("videos")).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Videos">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="h-1 w-[120px] bg-red mb-6"></div>
+    <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Videos</h1>
+    <p class="text-[17px] text-ink-muted max-w-[520px] mt-4.5 leading-relaxed">Live sets, rehearsal takes and the road. Drop the YouTube embeds into these frames.</p>
+    <div class="grid gap-5 mt-10 items-start" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+      {videos.map((video) => (
+        <figure class="m-0 bg-surface border border-line">
+          {video.data.youtubeUrl ? (
+            <div class="aspect-video">
+              <iframe
+                class="w-full h-full"
+                src={video.data.youtubeUrl.replace("watch?v=", "embed/")}
+                title={video.data.title}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          ) : (
+            <PlaceholderMedia note="YOUTUBE EMBED 16:9" class="aspect-video flex items-center justify-center cursor-pointer">
+              <div class="w-14 h-14 bg-red flex items-center justify-center text-white text-lg">▶</div>
+            </PlaceholderMedia>
+          )}
+          <figcaption class="px-4.5 py-4">
+            <div class="font-condensed font-semibold text-lg uppercase tracking-[0.04em]">{video.data.title}</div>
+            <div class="font-mono text-[11px] text-ink-dim mt-1.5">{video.data.tag}</div>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</Layout>

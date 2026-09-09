@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const press = (await getCollection("press")).sort((a, b) => a.data.order - b.data.order);
+---
+<Layout title="Press Kit">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="h-1 w-[120px] bg-red mb-6"></div>
+    <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Press kit</h1>
+    <p class="text-[17px] text-ink-muted max-w-[560px] mt-4.5 leading-relaxed">Everything a venue or promoter needs in one place. One-click download, or grab the pieces you need.</p>
+    <div class="grid gap-5 mt-11 items-start" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+      {press.map((item) => (
+        <div class="bg-surface border border-line p-6.5 flex flex-col gap-3 min-h-[200px]">
+          <span class="font-mono text-[11px] tracking-[0.18em] text-red">{item.data.kind}</span>
+          <div class="font-condensed font-bold text-2xl uppercase tracking-[0.04em]">{item.data.title}</div>
+          <p class="m-0 text-[15px] text-ink-muted leading-relaxed">{item.data.description}</p>
+          {item.data.file ? (
+            <a href={item.data.file} class="mt-auto font-condensed font-bold text-[13px] tracking-[0.12em] uppercase border-b border-red pb-0.5 self-start hover:text-white transition-colors">{item.data.actionLabel}</a>
+          ) : (
+            <span class="mt-auto font-mono text-xs text-ink-dimmer self-start">{item.data.actionLabel} — coming soon</span>
+          )}
+        </div>
+      ))}
+    </div>
+    <div class="mt-9 flex flex-wrap gap-3.5 items-center">
+      <span class="font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-ink-dimmer bg-raised border border-line-strong px-[30px] py-4 cursor-not-allowed">Download full EPK (PDF) — coming soon</span>
+    </div>
+  </div>
+</Layout>

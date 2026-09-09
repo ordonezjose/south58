@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "bandName": "SOUTH 58",
+    "tagline": "South Florida rock cover band. Available for casinos, festivals, pubs and private events.",
+    "email": "rock@south58band.com",
+    "phone": "786-778-4074",
+    "location": "SOUTH FLORIDA",
+    "social": {
+      "instagram": "https://instagram.com",
+      "facebook": "https://facebook.com",
+      "youtube": "https://youtube.com"
+    },
+    "home": {
+      "heroLine1": "Loud",
+      "heroLine2": "on.",
+      "heroSubcopy": "Rock, alt and pop covers from the 80s to now. Five pieces, ninety songs, South Florida stages every weekend.",
+      "whoWeAreCopy": "Five players, ninety songs, zero dead air. SOUTH 58 plays casinos, festivals, rock pubs and private events across South Florida.",
+      "bookUsCopy": "Tell us the date. We'll bring the room up."
+    },
+    "bookings": {
+      "intro": "Tell us the date, the room and the vibe. We answer every request within 48 hours.",
+      "formNote": "Goes straight to rock@south58band.com"
+    }
+  }
+}

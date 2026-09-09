@@ -1,0 +1,51 @@
+---
+interface Props {
+  site: {
+    bandName: string;
+    tagline: string;
+    email: string;
+    phone: string;
+    social: {
+      instagram?: string;
+      facebook?: string;
+      youtube?: string;
+    };
+  };
+}
+const { site } = Astro.props;
+
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/shows", label: "Shows" },
+  { href: "/videos", label: "Videos" },
+  { href: "/pics", label: "Pics" },
+  { href: "/songs", label: "Songs" },
+  { href: "/band", label: "Band" },
+  { href: "/press", label: "Press kit" },
+];
+---
+<footer class="border-t border-line px-[5vw] pt-14 pb-10">
+  <div class="mx-auto max-w-content grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+    <div>
+      <img src="/logo-white.svg" alt={site.bandName} class="h-[22px] block" />
+      <p class="text-sm text-ink-dim mt-4 max-w-[280px] leading-relaxed">{site.tagline}</p>
+    </div>
+    <nav aria-label="Footer" class="flex flex-col gap-2.5 font-mono text-[11px] tracking-[0.16em] uppercase">
+      {navItems.map((item) => (
+        <a href={item.href} class="text-ink-muted hover:text-white transition-colors">{item.label}</a>
+      ))}
+    </nav>
+    <div class="flex flex-col gap-2.5 font-mono text-[11px] tracking-[0.16em] text-ink-muted">
+      <a href={`mailto:${site.email}`} class="hover:text-white transition-colors">{site.email.toUpperCase()}</a>
+      <span>{site.phone}</span>
+      <div class="flex gap-3.5 mt-1.5">
+        {site.social.instagram && <a href={site.social.instagram} target="_blank" rel="noopener" class="hover:text-white transition-colors">INSTAGRAM</a>}
+        {site.social.facebook && <a href={site.social.facebook} target="_blank" rel="noopener" class="hover:text-white transition-colors">FACEBOOK</a>}
+        {site.social.youtube && <a href={site.social.youtube} target="_blank" rel="noopener" class="hover:text-white transition-colors">YOUTUBE</a>}
+      </div>
+    </div>
+  </div>
+  <div class="mx-auto max-w-content mt-9 pt-5 border-t border-white/5 font-mono text-[10px] tracking-[0.16em] text-ink-dimmer">
+    © {new Date().getFullYear()} {site.bandName}
+  </div>
+</footer>

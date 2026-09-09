@@ -1,0 +1,113 @@
+---
+interface Props {
+  site: {
+    bandName: string;
+    email: string;
+    phone: string;
+  };
+  currentPath: string;
+}
+
+const { site, currentPath } = Astro.props;
+
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/shows", label: "Shows" },
+  { href: "/videos", label: "Videos" },
+  { href: "/pics", label: "Pics" },
+  { href: "/songs", label: "Songs" },
+  { href: "/band", label: "Band" },
+  { href: "/press", label: "Press kit" },
+];
+
+const isActive = (href: string) =>
+  href === "/" ? currentPath === "/" : currentPath.startsWith(href);
+---
+
+<!--
+  Mobile menu is a pure CSS checkbox toggle — no JavaScript. The checkbox
+  lives before the header in the DOM so the overlay (a sibling further down)
+  can react to :checked with a plain sibling combinator.
+-->
+<input type="checkbox" id="menu-toggle" class="peer/menu hidden" />
+
+<header class="sticky top-0 z-50 border-b border-line bg-stage/92 backdrop-blur-sm">
+  <div class="mx-auto flex max-w-content items-center justify-between gap-5 px-[5vw] py-4">
+    <a href="/" aria-label={`${site.bandName} home`} class="shrink-0">
+      <img src="/logo-white.svg" alt={site.bandName} class="h-6 block" />
+    </a>
+
+    <nav aria-label="Primary" class="hidden md:flex flex-wrap justify-center gap-5 font-mono text-[11px] tracking-[0.16em] uppercase">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            "hover:text-white transition-colors",
+            isActive(item.href) ? "text-white" : "text-ink-muted",
+          ]}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3 shrink-0">
+      <a
+        href="/bookings"
+        class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white bg-red px-[22px] py-[13px] hover:bg-red-hover transition-colors"
+      >
+        Bookings
+      </a>
+      <label
+        for="menu-toggle"
+        aria-label="Open menu"
+        class="md:hidden flex flex-col justify-center gap-[5px] w-12 h-12 border border-line-strong cursor-pointer px-3"
+      >
+        <span class="block h-0.5 w-full bg-ink"></span>
+        <span class="block h-0.5 w-full bg-ink"></span>
+        <span class="block h-0.5 w-full bg-ink"></span>
+      </label>
+    </div>
+  </div>
+</header>
+
+<div
+  class="hidden peer-checked/menu:flex fixed inset-0 z-[80] bg-stage flex-col px-[5vw] pt-5 pb-10"
+>
+  <div class="flex items-center justify-between gap-5">
+    <img src="/logo-white.svg" alt={site.bandName} class="h-6 block" />
+    <label
+      for="menu-toggle"
+      aria-label="Close menu"
+      class="w-12 h-12 border border-line-strong text-ink text-[22px] leading-none cursor-pointer flex items-center justify-center"
+    >
+      &times;
+    </label>
+  </div>
+  <nav aria-label="Mobile primary" class="mt-12 flex flex-col gap-1">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          "font-display text-[clamp(30px,9vw,44px)] leading-[1.15] uppercase tracking-[-0.02em] py-1.5 hover:text-white transition-colors",
+          isActive(item.href) ? "text-white" : "text-ink-muted",
+        ]}
+      >
+        {item.label}
+      </a>
+    ))}
+    <a
+      href="/bookings"
+      class:list={[
+        "font-display text-[clamp(30px,9vw,44px)] leading-[1.15] uppercase tracking-[-0.02em] py-1.5 hover:text-white transition-colors",
+        isActive("/bookings") ? "text-white" : "text-ink-muted",
+      ]}
+    >
+      Bookings
+    </a>
+  </nav>
+  <div class="mt-auto flex flex-col gap-3 font-mono text-[11px] tracking-[0.16em] text-ink-dim">
+    <a href={`mailto:${site.email}`} class="text-ink-muted">{site.email.toUpperCase()}</a>
+    <span>{site.phone}</span>
+  </div>
+</div>

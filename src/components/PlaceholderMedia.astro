@@ -1,0 +1,20 @@
+---
+interface Props {
+  note: string;
+  class?: string;
+  notePosition?: "bottom-left" | "top-right" | "center-bottom";
+}
+const { note, class: className = "", notePosition = "bottom-left" } = Astro.props;
+
+const notePositionClass = {
+  "bottom-left": "absolute bottom-3.5 left-4",
+  "top-right": "absolute top-4 right-[18px]",
+  "center-bottom": "absolute bottom-3.5 left-4",
+}[notePosition];
+---
+<div class:list={["placeholder-bg relative border border-line", className]}>
+  <slot />
+  <span class:list={[notePositionClass, "font-mono text-[10px] tracking-[0.16em] text-ink-dimmer"]}>
+    {note}
+  </span>
+</div>

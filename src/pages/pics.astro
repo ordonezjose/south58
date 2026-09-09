@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { getEntry } from "astro:content";
+
+const pics = (await getCollection("pics")).sort((a, b) => a.data.order - b.data.order);
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
+---
+<Layout title="Pics">
+  <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
+    <div class="h-1 w-[120px] bg-red mb-6"></div>
+    <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Pics</h1>
+    <div class="flex flex-wrap gap-4 items-center justify-between mt-4.5">
+      <p class="m-0 text-[17px] text-ink-muted max-w-[520px] leading-relaxed">
+        Live shots from the last year of shows. Got pics of us? Send them to <a href={`mailto:${site.data.email}`}>{site.data.email}</a>.
+      </p>
+      <span class="font-mono text-[11px] tracking-[0.16em] text-ink-dim">DROP PHOTOS INTO THE TILES</span>
+    </div>
+    <div class="grid gap-3 mt-10" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+      {pics.map((pic) => (
+        <div
+          class="relative placeholder-bg border border-line flex items-end p-3 cursor-pointer transition-colors hover:border-red"
+          style={`aspect-ratio: ${pic.data.ratio}`}
+        >
+          {pic.data.photo && (
+            <img src={pic.data.photo} alt={pic.data.label} class="absolute inset-0 w-full h-full object-cover" />
+          )}
+          <span class="relative font-mono text-[10px] tracking-[0.14em] text-ink-dimmer">{pic.data.label.toUpperCase()}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
