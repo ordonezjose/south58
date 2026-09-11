@@ -13,8 +13,19 @@
     "home": {
       "heroLine1": "Loud",
       "heroLine2": "on.",
-      "heroSubcopy": "Rock, alt and pop covers from the 80s to now. Five pieces, ninety songs, South Florida stages every weekend.",
+      "heroSubcopy": "Classic Rock, alt and pop covers from the 80s to now. 4 pieces, ninety songs, South Florida stages every weekend.",
+      "heroMedia": {
+        "type": "image",
+        "videoUrl": "https://youtu.be/OqFFKG22_Nk?si=-rugZQ9N9OB0c1fN",
+        "image": "/uploads/hero/settings/home/heroMedia/image.webp",
+        "parallax": true
+      },
       "whoWeAreCopy": "4 players, ninety songs, zero dead air. SOUTH 58 plays casinos, festivals, rock pubs and private events across South Florida.",
+      "whoWeAreMedia": {
+        "type": "image",
+        "image": "/uploads/who-we-are/settings/home/whoWeAreMedia/image.webp",
+        "parallax": true
+      },
       "bookUsCopy": "Tell us the date. We'll bring the room up."
     },
     "bookings": {

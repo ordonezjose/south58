@@ -13,6 +13,39 @@ import { config, fields, collection, singleton } from "@keystatic/core";
 // config/collection/singleton/fields API, but if the panel's UX doesn't
 // match what you expected for a field, that's the part worth checking
 // against https://keystatic.com/docs yourself.
+// A section's full-bleed background: a video URL or an image that can be
+// parallaxed. `slug` keeps each section's uploads in their own folder.
+const backgroundMediaField = (label: string, slug: string) =>
+  fields.object(
+    {
+      type: fields.select({
+        label: "Background type",
+        options: [
+          { label: "Video (looped, muted)", value: "video" },
+          { label: "Image", value: "image" },
+        ],
+        defaultValue: "image",
+      }),
+      videoUrl: fields.url({
+        label: "Background video URL (YouTube link, or a direct video file URL)",
+        description:
+          "Plays looped and muted. A YouTube link is embedded full-bleed; any other URL is treated as a direct video file.",
+        validation: { isRequired: false },
+      }),
+      image: fields.image({
+        label: "Background image",
+        directory: `public/uploads/${slug}`,
+        publicPath: `/uploads/${slug}/`,
+        validation: { isRequired: false },
+      }),
+      parallax: fields.checkbox({
+        label: "Parallax scroll effect (image only)",
+        defaultValue: true,
+      }),
+    },
+    { label }
+  );
+
 export default config({
   storage: {
     kind: "local",
@@ -172,7 +205,9 @@ export default config({
             heroLine1: fields.text({ label: "Hero line 1" }),
             heroLine2: fields.text({ label: "Hero line 2" }),
             heroSubcopy: fields.text({ label: "Hero subcopy", multiline: true }),
+            heroMedia: backgroundMediaField("Hero background media", "hero"),
             whoWeAreCopy: fields.text({ label: '"Who we are" copy', multiline: true }),
+            whoWeAreMedia: backgroundMediaField('"Who we are" background media', "who-we-are"),
             bookUsCopy: fields.text({ label: '"Book us" copy', multiline: true }),
           }),
           bookings: fields.object({

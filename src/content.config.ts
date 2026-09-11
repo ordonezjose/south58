@@ -79,6 +79,15 @@ const testimonials = defineCollection({
   }),
 });
 
+// Full-bleed section background: either a video URL or an image that can be
+// parallaxed. Shared by every section that offers the choice.
+const backgroundMedia = z.object({
+  type: z.enum(["video", "image"]),
+  videoUrl: z.string().url().optional(),
+  image: z.string().optional(),
+  parallax: z.boolean(),
+});
+
 const site = defineCollection({
   loader: file("./src/content/site.json"),
   schema: z.object({
@@ -96,7 +105,9 @@ const site = defineCollection({
       heroLine1: z.string(),
       heroLine2: z.string(),
       heroSubcopy: z.string(),
+      heroMedia: backgroundMedia,
       whoWeAreCopy: z.string(),
+      whoWeAreMedia: backgroundMedia,
       bookUsCopy: z.string(),
     }),
     bookings: z.object({

@@ -65,3 +65,18 @@
     #0e0f12 10px 20px
   );
 }
+
+/* An iframe can't do object-fit: cover, so a YouTube background is oversized
+   past whichever axis is the constraint and re-centred, which crops it the
+   same way a cover-fitted video would be. */
+.bg-yt-embed {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 56.25vw; /* 16:9 of the viewport width */
+  min-width: 177.78vh; /* 16:9 of the viewport height */
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  border: 0;
+}

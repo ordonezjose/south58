@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PlaceholderMedia from "../components/PlaceholderMedia.astro";
+import BackgroundMedia from "../components/BackgroundMedia.astro";
+import { hasMedia } from "../lib/background-media";
 import { getCollection, getEntry } from "astro:content";
 
 const site = await getEntry("site", "settings");
@@ -18,10 +20,14 @@ const testimonials = (await getCollection("testimonials")).sort(
 );
 
 const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
+
+const heroMedia = site.data.home.heroMedia;
+const whoWeAreMedia = site.data.home.whoWeAreMedia;
 ---
 <Layout title="Home">
   <!-- HERO -->
-  <section class="relative min-h-[min(92vh,820px)] flex flex-col justify-end px-[5vw] pt-[120px] pb-[124px] placeholder-bg">
+  <section class="relative min-h-[min(92vh,820px)] flex flex-col justify-end px-[5vw] pt-[120px] pb-[124px] overflow-hidden">
+    <BackgroundMedia media={heroMedia} />
     <div class="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/95"></div>
     <div class="relative w-full mx-auto max-w-content">
       <div class="h-1 w-[180px] bg-red mb-6"></div>
@@ -32,7 +38,9 @@ const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
         <p class="m-0 text-[clamp(16px,2vw,19px)] leading-relaxed text-ink-soft max-w-[440px]">
           {site.data.home.heroSubcopy}
         </p>
-        <span class="font-mono text-[10px] tracking-[0.2em] text-ink-dimmer">[ FULL-BLEED LOOPED LIVE VIDEO ]</span>
+        {!hasMedia(heroMedia) && (
+          <span class="font-mono text-[10px] tracking-[0.2em] text-ink-dimmer">[ FULL-BLEED LOOPED LIVE VIDEO ]</span>
+        )}
       </div>
     </div>
   </section>
@@ -64,14 +72,17 @@ const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
       </div>
 
       <!-- WHO WE ARE -->
-      <div class="relative mt-16 min-h-[400px] placeholder-bg border border-line flex items-end">
+      <div class="relative mt-16 min-h-[400px] border border-line flex items-end overflow-hidden">
+        <BackgroundMedia media={whoWeAreMedia} />
         <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/25"></div>
         <div class="relative px-10 py-12">
           <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-red">WHO WE ARE</span>
           <p class="text-[clamp(20px,2.4vw,26px)] leading-[1.45] mt-4.5 max-w-[520px]">{site.data.home.whoWeAreCopy}</p>
           <a href="/band" class="inline-block mt-6 font-condensed font-bold text-sm tracking-[0.12em] uppercase border-b border-red pb-0.5 hover:text-white transition-colors">Meet the band</a>
         </div>
-        <span class="absolute top-4 right-[18px] font-mono text-[10px] tracking-[0.16em] text-ink-dimmer">BACKGROUND IMAGE — FULL ROW</span>
+        {!hasMedia(whoWeAreMedia) && (
+          <span class="absolute top-4 right-[18px] font-mono text-[10px] tracking-[0.16em] text-ink-dimmer">BACKGROUND IMAGE — FULL ROW</span>
+        )}
       </div>
 
       <!-- FEATURED VIDEO + BOOK US -->
@@ -106,3 +117,55 @@ const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
     </div>
   </section>
 </Layout>
+
+<script>
+  // Parallax: a background drifts against its section instead of sitting
+  // still, so it reads as further away.
+  //
+  // The layer is scaled up, and its drift is mapped onto exactly the overhang
+  // that scaling buys — spread across the section's whole trip through the
+  // viewport. Because the shift can never exceed the overhang, the layer is
+  // guaranteed to still cover its section at every scroll position, whatever
+  // the section's height or position on the page.
+  const layers = document.querySelectorAll<HTMLElement>("[data-parallax]");
+
+  if (layers.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const SCALE = 1.25;
+    const OVERHANG = (SCALE - 1) / 2; // as a fraction of section height, per edge
+    let queued = false;
+
+    const render = () => {
+      queued = false;
+
+      for (const layer of layers) {
+        const section = layer.parentElement;
+        if (!section) continue;
+
+        const box = section.getBoundingClientRect();
+        if (box.bottom <= 0 || box.top >= innerHeight) continue;
+
+        // -1 as the section enters from the bottom, +1 as it leaves the top.
+        const travel = (innerHeight + box.height) / 2;
+        const progress = (innerHeight / 2 - (box.top + box.height / 2)) / travel;
+        const shift = progress * box.height * OVERHANG;
+
+        layer.style.transform = `translate3d(0, ${shift}px, 0) scale(${SCALE})`;
+      }
+    };
+
+    for (const layer of layers) layer.style.willChange = "transform";
+    render();
+
+    addEventListener(
+      "scroll",
+      () => {
+        if (!queued) {
+          queued = true;
+          requestAnimationFrame(render);
+        }
+      },
+      { passive: true }
+    );
+    addEventListener("resize", render, { passive: true });
+  }
+</script>

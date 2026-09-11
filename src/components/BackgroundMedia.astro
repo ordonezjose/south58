@@ -1,0 +1,76 @@
+---
+// Full-bleed background layer for a section: a looping muted video, an image
+// (optionally parallaxed), or the placeholder pattern while nothing is set.
+// The parent must be positioned and `overflow-hidden` — a parallaxed image is
+// scaled past the box so it has room to drift.
+import type { BackgroundMedia } from "../lib/background-media";
+
+interface Props {
+  media: BackgroundMedia;
+}
+
+const { media } = Astro.props;
+
+const hasVideo = media.type === "video" && !!media.videoUrl;
+const hasImage = media.type === "image" && !!media.image;
+
+// A YouTube link gets embedded as a muted, looping iframe; anything else is
+// assumed to point straight at a playable video file.
+function youTubeId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname.endsWith("youtu.be")) return u.pathname.slice(1) || null;
+    if (!u.hostname.endsWith("youtube.com") && !u.hostname.endsWith("youtube-nocookie.com")) return null;
+    if (u.pathname === "/watch") return u.searchParams.get("v");
+    const [, segment, id] = u.pathname.split("/");
+    return segment === "embed" || segment === "shorts" || segment === "v" ? id ?? null : null;
+  } catch {
+    return null;
+  }
+}
+
+const id = hasVideo ? youTubeId(media.videoUrl!) : null;
+const youTubeSrc = id
+  ? `https://www.youtube-nocookie.com/embed/${id}?${new URLSearchParams({
+      autoplay: "1",
+      mute: "1",
+      loop: "1",
+      playlist: id,
+      controls: "0",
+      modestbranding: "1",
+      playsinline: "1",
+      disablekb: "1",
+      rel: "0",
+    })}`
+  : null;
+---
+{youTubeSrc ? (
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <iframe
+      class="bg-yt-embed"
+      src={youTubeSrc}
+      title="Background video"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      tabindex="-1"
+      aria-hidden="true"
+    />
+  </div>
+) : hasVideo ? (
+  <video
+    class="absolute inset-0 h-full w-full object-cover"
+    src={media.videoUrl}
+    autoplay
+    muted
+    loop
+    playsinline
+  />
+) : hasImage ? (
+  <div
+    class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+    style={{ backgroundImage: `url(${media.image})` }}
+    data-parallax={media.parallax ? "" : undefined}
+  />
+) : (
+  <div class="absolute inset-0 placeholder-bg" />
+)}
