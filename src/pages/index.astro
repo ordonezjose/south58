@@ -1,17 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PlaceholderMedia from "../components/PlaceholderMedia.astro";
 import BackgroundMedia from "../components/BackgroundMedia.astro";
+import FeaturedVideo from "../components/FeaturedVideo.astro";
 import { hasMedia } from "../lib/background-media";
+import { showDateFormatter, startOfToday } from "../lib/show-dates";
 import { getCollection, getEntry } from "astro:content";
 
 const site = await getEntry("site", "settings");
 if (!site) throw new Error("site.json settings entry is missing");
 
 const allShows = await getCollection("shows");
-const now = new Date();
+const today = startOfToday();
 const nextShows = allShows
-  .filter((s) => s.data.date >= now)
+  .filter((s) => s.data.date >= today)
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
   .slice(0, 3);
 
@@ -19,7 +20,7 @@ const testimonials = (await getCollection("testimonials")).sort(
   (a, b) => a.data.order - b.data.order
 );
 
-const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
+const monthFmt = showDateFormatter({ month: "short" });
 
 const heroMedia = site.data.home.heroMedia;
 const whoWeAreMedia = site.data.home.whoWeAreMedia;
@@ -61,7 +62,7 @@ const whoWeAreMedia = site.data.home.whoWeAreMedia;
           {nextShows.map((show) => (
             <div class="bg-surface px-[22px] py-6 flex flex-col gap-2.5">
               <div class="font-display text-[32px] leading-none">
-                {show.data.date.getDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.data.date).toUpperCase()}</span>
+                {show.data.date.getUTCDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.data.date).toUpperCase()}</span>
               </div>
               <div class="font-condensed font-semibold text-xl uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
               <div class="text-sm text-ink-muted">{show.data.city} · {show.data.time}</div>
@@ -87,9 +88,7 @@ const whoWeAreMedia = site.data.home.whoWeAreMedia;
 
       <!-- FEATURED VIDEO + BOOK US -->
       <div class="grid gap-5 mt-[72px] items-start" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-        <PlaceholderMedia note="FEATURED VIDEO 16:9" notePosition="bottom-left" class="aspect-video flex items-center justify-center col-span-2 min-w-0">
-          <div class="w-16 h-16 bg-red flex items-center justify-center text-white text-xl">▶</div>
-        </PlaceholderMedia>
+        <FeaturedVideo url={site.data.home.featuredVideoUrl} class="aspect-video col-span-2 min-w-0" />
         <div class="bg-raised border border-line p-7 flex flex-col gap-4">
           <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-red">BOOK US</span>
           <p class="m-0 font-condensed font-bold text-[clamp(26px,3vw,34px)] leading-[1.05] uppercase">{site.data.home.bookUsCopy}</p>

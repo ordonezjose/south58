@@ -108,7 +108,15 @@ const site = defineCollection({
       heroMedia: backgroundMedia,
       whoWeAreCopy: z.string(),
       whoWeAreMedia: backgroundMedia,
+      // Keystatic writes null into a URL field that has been cleared.
+      featuredVideoUrl: z.string().url().nullish(),
       bookUsCopy: z.string(),
+    }),
+    showsPage: z.object({
+      emptyUpcoming: z.string(),
+      emptyPast: z.string(),
+      bookingPrompt: z.string(),
+      bookingCta: z.string(),
     }),
     bookings: z.object({
       intro: z.string(),

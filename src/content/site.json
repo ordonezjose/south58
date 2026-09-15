@@ -22,11 +22,18 @@
       },
       "whoWeAreCopy": "4 players, ninety songs, zero dead air. SOUTH 58 plays casinos, festivals, rock pubs and private events across South Florida.",
       "whoWeAreMedia": {
-        "type": "image",
+        "type": "video",
+        "videoUrl": "https://www.youtube.com/watch?v=OqFFKG22_Nk",
         "image": "/uploads/who-we-are/settings/home/whoWeAreMedia/image.webp",
         "parallax": true
       },
       "bookUsCopy": "Tell us the date. We'll bring the room up."
+    },
+    "showsPage": {
+      "emptyUpcoming": "No shows on the books yet — check back soon.",
+      "emptyPast": "No past shows logged yet.",
+      "bookingPrompt": "Want SOUTH 58 at your venue or private event?",
+      "bookingCta": "Request a show"
     },
     "bookings": {
       "intro": "Tell us the date, the room and the vibe. We answer every request within 48 hours.",

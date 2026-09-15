@@ -1,15 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
+import { showDateFormatter, startOfToday } from "../lib/show-dates";
+
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
+const copy = site.data.showsPage;
 
 const allShows = (await getCollection("shows")).sort(
   (a, b) => a.data.date.getTime() - b.data.date.getTime()
 );
-const now = new Date();
-const upcoming = allShows.filter((s) => s.data.date >= now);
-const past = allShows.filter((s) => s.data.date < now).reverse();
+const today = startOfToday();
+const upcoming = allShows.filter((s) => s.data.date >= today);
+const past = allShows.filter((s) => s.data.date < today).reverse();
 
-const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" });
+const dateFmt = showDateFormatter({ weekday: "short", month: "short", day: "numeric" });
 ---
 <Layout title="Shows">
   <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
@@ -41,7 +46,7 @@ const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "sho
 
       <div class="hidden peer-checked/upcoming:block basis-full border border-line mt-2">
         {upcoming.length === 0 && (
-          <p class="p-6 text-ink-muted text-sm">No shows on the books yet — check back soon.</p>
+          <p class="p-6 text-ink-muted text-sm">{copy.emptyUpcoming}</p>
         )}
         {upcoming.map((show) => (
           <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
@@ -59,14 +64,14 @@ const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "sho
           </div>
         ))}
         <div class="px-6 py-5.5 flex flex-wrap gap-4 items-center justify-between">
-          <span class="text-[15px] text-ink-muted">Want SOUTH 58 at your venue or private event?</span>
-          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">Request a show</a>
+          <span class="text-[15px] text-ink-muted">{copy.bookingPrompt}</span>
+          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">{copy.bookingCta}</a>
         </div>
       </div>
 
       <div class="hidden peer-checked/past:block basis-full border border-line mt-2">
         {past.length === 0 && (
-          <p class="p-6 text-ink-muted text-sm">No past shows logged yet.</p>
+          <p class="p-6 text-ink-muted text-sm">{copy.emptyPast}</p>
         )}
         {past.map((show) => (
           <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line opacity-60" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
@@ -82,8 +87,8 @@ const dateFmt = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "sho
           </div>
         ))}
         <div class="px-6 py-5.5 flex flex-wrap gap-4 items-center justify-between">
-          <span class="text-[15px] text-ink-muted">Want SOUTH 58 at your venue or private event?</span>
-          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">Request a show</a>
+          <span class="text-[15px] text-ink-muted">{copy.bookingPrompt}</span>
+          <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">{copy.bookingCta}</a>
         </div>
       </div>
     </div>

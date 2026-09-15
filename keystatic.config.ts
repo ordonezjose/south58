@@ -208,8 +208,35 @@ export default config({
             heroMedia: backgroundMediaField("Hero background media", "hero"),
             whoWeAreCopy: fields.text({ label: '"Who we are" copy', multiline: true }),
             whoWeAreMedia: backgroundMediaField('"Who we are" background media', "who-we-are"),
+            featuredVideoUrl: fields.url({
+              label: "Featured video URL",
+              description:
+                "The 16:9 video on the homepage. A YouTube link shows its thumbnail and only loads the player when a visitor clicks play; any other URL is treated as a direct video file. Leave empty to keep the placeholder.",
+              validation: { isRequired: false },
+            }),
             bookUsCopy: fields.text({ label: '"Book us" copy', multiline: true }),
           }),
+          showsPage: fields.object(
+            {
+              emptyUpcoming: fields.text({
+                label: "Empty state — upcoming",
+                description: "Shown when there are no upcoming dates.",
+                multiline: true,
+              }),
+              emptyPast: fields.text({
+                label: "Empty state — past dates",
+                description: "Shown when no past dates have been logged.",
+                multiline: true,
+              }),
+              bookingPrompt: fields.text({
+                label: "Booking prompt",
+                description: "The line above the button at the bottom of both lists.",
+                multiline: true,
+              }),
+              bookingCta: fields.text({ label: "Booking button label" }),
+            },
+            { label: "Shows page copy" }
+          ),
           bookings: fields.object({
             intro: fields.text({ label: "Bookings intro", multiline: true }),
             formNote: fields.text({ label: "Form note" }),

@@ -4,6 +4,7 @@
 // The parent must be positioned and `overflow-hidden` — a parallaxed image is
 // scaled past the box so it has room to drift.
 import type { BackgroundMedia } from "../lib/background-media";
+import { youTubeId } from "../lib/youtube";
 
 interface Props {
   media: BackgroundMedia;
@@ -16,19 +17,6 @@ const hasImage = media.type === "image" && !!media.image;
 
 // A YouTube link gets embedded as a muted, looping iframe; anything else is
 // assumed to point straight at a playable video file.
-function youTubeId(url: string): string | null {
-  try {
-    const u = new URL(url);
-    if (u.hostname.endsWith("youtu.be")) return u.pathname.slice(1) || null;
-    if (!u.hostname.endsWith("youtube.com") && !u.hostname.endsWith("youtube-nocookie.com")) return null;
-    if (u.pathname === "/watch") return u.searchParams.get("v");
-    const [, segment, id] = u.pathname.split("/");
-    return segment === "embed" || segment === "shorts" || segment === "v" ? id ?? null : null;
-  } catch {
-    return null;
-  }
-}
-
 const id = hasVideo ? youTubeId(media.videoUrl!) : null;
 const youTubeSrc = id
   ? `https://www.youtube-nocookie.com/embed/${id}?${new URLSearchParams({

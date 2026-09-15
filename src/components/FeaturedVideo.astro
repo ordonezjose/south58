@@ -1,0 +1,79 @@
+---
+// The homepage's 16:9 feature slot. A YouTube link renders as a poster plus
+// the play button the design already called for, and the player itself is only
+// fetched once someone clicks — embedding it up front pulls a megabyte of
+// YouTube on every visit for a video most visitors never start. Any other URL
+// is treated as a direct video file.
+import PlaceholderMedia from "./PlaceholderMedia.astro";
+import { youTubeId } from "../lib/youtube";
+
+interface Props {
+  url?: string | null;
+  class?: string;
+}
+
+const { url, class: className = "" } = Astro.props;
+
+const id = url ? youTubeId(url) : null;
+const embedSrc = id
+  ? `https://www.youtube-nocookie.com/embed/${id}?${new URLSearchParams({
+      autoplay: "1",
+      rel: "0",
+      modestbranding: "1",
+      playsinline: "1",
+    })}`
+  : null;
+
+// maxresdefault is the only 16:9 thumbnail, but YouTube doesn't generate it for
+// every video; hqdefault always exists and object-cover crops its pillarbox.
+const poster = id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : null;
+const posterFallback = id
+  ? `this.onerror=null;this.src='https://i.ytimg.com/vi/${id}/hqdefault.jpg'`
+  : null;
+
+const placeholderClass = ["flex items-center justify-center", className].filter(Boolean).join(" ");
+---
+{embedSrc ? (
+  <div
+    class:list={["relative border border-line bg-black overflow-hidden", className]}
+    data-featured-video
+    data-embed={embedSrc}
+  >
+    <button
+      type="button"
+      aria-label="Play video"
+      class="group absolute inset-0 flex items-center justify-center cursor-pointer"
+    >
+      <img src={poster} alt="" onerror={posterFallback} class="absolute inset-0 h-full w-full object-cover" />
+      <span class="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors"></span>
+      <span class="relative w-16 h-16 bg-red flex items-center justify-center text-white text-xl group-hover:bg-red-hover transition-colors">
+        &#9654;
+      </span>
+    </button>
+  </div>
+) : url ? (
+  <video class:list={["border border-line bg-black w-full", className]} src={url} controls preload="metadata"></video>
+) : (
+  <PlaceholderMedia note="FEATURED VIDEO 16:9" notePosition="bottom-left" class={placeholderClass}>
+    <div class="w-16 h-16 bg-red flex items-center justify-center text-white text-xl">&#9654;</div>
+  </PlaceholderMedia>
+)}
+
+<script>
+  // Swap the poster for the real player on click. Built with DOM calls rather
+  // than innerHTML so nothing from the stored URL is ever parsed as markup.
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    const host = target?.closest<HTMLElement>("[data-featured-video]");
+    const src = host?.dataset.embed;
+    if (!host || !src) return;
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "absolute inset-0 h-full w-full";
+    iframe.src = src;
+    iframe.title = "Featured video";
+    iframe.allow = "autoplay; encrypted-media; fullscreen";
+    iframe.allowFullscreen = true;
+    host.replaceChildren(iframe);
+  });
+</script>
