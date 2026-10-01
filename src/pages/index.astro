@@ -125,12 +125,37 @@ const whoWeAreMedia = site.data.home.whoWeAreMedia;
         <div class="flex items-baseline justify-between gap-4 mb-6.5">
           <h2 class="font-display uppercase text-[clamp(26px,3.4vw,40px)] tracking-[-0.01em] m-0">WHAT PEOPLE SAY</h2>
         </div>
-        <div class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <!--
+          Columns rather than a grid: a screenshot arrives in whatever shape
+          the phone captured it, and grid rows would stretch every card to
+          match the tallest. The images are never cropped either — the text
+          inside them is the testimonial.
+        -->
+        <div class="columns-1 sm:columns-2 md:columns-3 gap-5 [&>*]:mb-5">
           {testimonials.map((t) => (
-            <div class="bg-raised border border-line p-7 flex flex-col gap-3.5">
-              <div class="font-display text-3xl text-red leading-none">&ldquo;</div>
-              <p class="m-0 text-lg leading-relaxed">{t.data.quote}</p>
-              <div class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">{t.data.source}</div>
+            <div class="break-inside-avoid bg-raised border border-line">
+              {t.data.screenshot ? (
+                <>
+                  <img
+                    src={t.data.screenshot}
+                    alt={t.data.alt || t.data.source || `Social media post about ${site.data.bandName}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="block w-full"
+                  />
+                  {t.data.source && (
+                    <div class="px-5 py-4 font-mono text-[11px] tracking-[0.14em] text-ink-dim">{t.data.source}</div>
+                  )}
+                </>
+              ) : (
+                <div class="p-7 flex flex-col gap-3.5">
+                  <div class="font-display text-3xl text-red leading-none">&ldquo;</div>
+                  <p class="m-0 text-lg leading-relaxed">{t.data.quote}</p>
+                  {t.data.source && (
+                    <div class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">{t.data.source}</div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

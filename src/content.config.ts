@@ -62,13 +62,22 @@ const press = defineCollection({
   }),
 });
 
+// A testimonial is either a screenshot of a real post or a typed-out quote,
+// so both halves are optional on their own and the refine keeps an entry from
+// being neither — that would render an empty card.
 const testimonials = defineCollection({
   loader: glob({ pattern: "**/*.json", base: "./src/content/testimonials" }),
-  schema: z.object({
-    quote: z.string(),
-    source: z.string(),
-    order: z.number(),
-  }),
+  schema: z
+    .object({
+      screenshot: z.string().optional(),
+      alt: z.string().optional(),
+      quote: z.string().optional(),
+      source: z.string().optional(),
+      order: z.number(),
+    })
+    .refine((entry) => entry.screenshot || entry.quote, {
+      message: "needs either a screenshot or a quote",
+    }),
 });
 
 // Full-bleed section background: either a video URL or an image that can be

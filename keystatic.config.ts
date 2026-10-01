@@ -144,14 +144,37 @@ export default config({
     }),
 
     testimonials: collection({
-      label: "Testimonials",
+      label: "What people say",
       path: "src/content/testimonials/*",
       format: "json",
       slugField: "slug",
       schema: {
         slug: fields.slug({ name: { label: "Slug" } }),
-        quote: fields.text({ label: "Quote", multiline: true }),
-        source: fields.text({ label: "Source", description: '"INSTAGRAM · @HANDLE"' }),
+        screenshot: fields.image({
+          label: "Screenshot",
+          description:
+            "A screenshot of a real post, comment or review. Shown uncropped at whatever shape it is, so the text in it stays readable. Leave empty to type the quote out instead.",
+          directory: "public/uploads/testimonials",
+          publicPath: "/uploads/testimonials/",
+          validation: { isRequired: false },
+        }),
+        alt: fields.text({
+          label: "What the screenshot says",
+          description:
+            "Read aloud to visitors using a screen reader, and what search engines see — the words inside an image are invisible to both. A short summary is enough.",
+          validation: { isRequired: false },
+        }),
+        quote: fields.text({
+          label: "Quote",
+          description: "Used only when there is no screenshot.",
+          multiline: true,
+          validation: { isRequired: false },
+        }),
+        source: fields.text({
+          label: "Source",
+          description: '"INSTAGRAM · @HANDLE". Optional under a screenshot that already shows where it came from.',
+          validation: { isRequired: false },
+        }),
         order: fields.integer({ label: "Order", defaultValue: 1 }),
       },
     }),
