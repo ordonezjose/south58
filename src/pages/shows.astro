@@ -78,7 +78,15 @@ const emptyPast = shows.ok ? copy.emptyPast : "Dates are temporarily unavailable
             </div>
             <div class="min-w-0">
               <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
-              <div class="text-sm text-ink-muted mt-0.5">{show.city}</div>
+              <a
+                href={show.directionsUrl}
+                target="_blank"
+                rel="noopener"
+                aria-label={`Get directions to ${show.venue}`}
+                class="inline-block text-sm text-ink-muted mt-1 border-b border-line-strong hover:text-white hover:border-red transition-colors"
+              >
+                {show.address}
+              </a>
             </div>
             <div class="flex gap-2.5 flex-wrap justify-start">
               <a
@@ -110,7 +118,8 @@ const emptyPast = shows.ok ? copy.emptyPast : "Dates are temporarily unavailable
             </div>
             <div class="min-w-0">
               <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
-              <div class="text-sm text-ink-muted mt-0.5">{show.city}</div>
+              {/* Not a link here: directions to a show that already happened are noise. */}
+              <div class="text-sm text-ink-muted mt-1">{show.address}</div>
             </div>
             <span class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">PLAYED</span>
           </div>

@@ -14,6 +14,10 @@ export interface Show {
   date: Date;
   venue: string;
   city: string;
+  /** Street line plus city, as much of it as the listing provides. */
+  address: string;
+  /** Opens turn-by-turn directions in whatever maps app the device uses. */
+  directionsUrl: string;
   /** Direct ticket link when the event has one. */
   ticketUrl?: string;
   /** The event on Bandsintown — the RSVP/track destination their terms require. */
@@ -30,7 +34,16 @@ interface RawEvent {
   datetime: string;
   title?: string;
   offers?: { type?: string; status?: string; url?: string }[];
-  venue?: { name?: string; city?: string; region?: string; country?: string };
+  venue?: {
+    name?: string;
+    city?: string;
+    region?: string;
+    country?: string;
+    street_address?: string;
+    postal_code?: string;
+    latitude?: string;
+    longitude?: string;
+  };
 }
 
 let cache: { at: number; value: ShowsResult } | null = null;
@@ -100,14 +113,31 @@ function normalize(raw: RawEvent): Show | null {
 
   const ticket = raw.offers?.find((offer) => offer.url && offer.status !== "sold out")?.url;
 
+  const street = raw.venue?.street_address?.trim();
+  const address = [street, place].filter(Boolean).join(", ");
+
   return {
     id: raw.id,
     date,
     venue,
     city: place,
+    address,
+    directionsUrl: directionsTo(raw, address),
     ticketUrl: ticket,
     eventUrl: raw.url,
   };
+}
+
+// Google's universal maps URL hands off to whichever app the device actually
+// uses — Google Maps on Android, Apple Maps or Google Maps on iOS, the web
+// everywhere else — so one link covers every visitor. Coordinates are used
+// when the listing has them because they can't be geocoded to the wrong place;
+// otherwise the written address is the next best destination.
+function directionsTo(raw: RawEvent, address: string): string {
+  const lat = raw.venue?.latitude?.trim();
+  const lng = raw.venue?.longitude?.trim();
+  const destination = lat && lng ? `${lat},${lng}` : address || (raw.venue?.name ?? "");
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 }
 
 // `datetime` is the venue's local time with no offset ("2026-09-18T21:00:00").

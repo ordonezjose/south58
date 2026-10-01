@@ -72,7 +72,16 @@ const whoWeAreMedia = site.data.home.whoWeAreMedia;
                 {show.date.getUTCDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.date).toUpperCase()}</span>
               </div>
               <div class="font-condensed font-semibold text-xl uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
-              <div class="text-sm text-ink-muted">{show.city} · {timeFmt.format(show.date)}</div>
+              <a
+                href={show.directionsUrl}
+                target="_blank"
+                rel="noopener"
+                aria-label={`Get directions to ${show.venue}`}
+                class="inline-block self-start text-sm text-ink-muted border-b border-line-strong hover:text-white hover:border-red transition-colors"
+              >
+                {show.address}
+              </a>
+              <div class="font-mono text-[11px] text-ink-dim">{timeFmt.format(show.date)}</div>
               <a
                 href={show.ticketUrl ?? show.eventUrl}
                 target="_blank"
