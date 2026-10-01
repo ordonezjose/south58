@@ -227,6 +227,12 @@ export default config({
             }),
             bookUsCopy: fields.text({ label: '"Book us" copy', multiline: true }),
           }),
+          showPressKit: fields.checkbox({
+            label: "Show the press kit in the menus",
+            description:
+              "Off while the material is still being put together: the page disappears from the header and footer, and search engines are asked not to list it. The page itself stays reachable by direct link so you can preview it.",
+            defaultValue: false,
+          }),
           pageIntros: fields.object(
             {
               band: fields.text({ label: "Band page", multiline: true }),

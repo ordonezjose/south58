@@ -10,6 +10,7 @@ interface Props {
       facebook?: string;
       youtube?: string;
     };
+    showPressKit: boolean;
   };
 }
 const { site } = Astro.props;
@@ -21,7 +22,7 @@ const navItems = [
   { href: "/pics", label: "Pics" },
   { href: "/songs", label: "Songs" },
   { href: "/band", label: "Band" },
-  { href: "/press", label: "Press kit" },
+  ...(site.showPressKit ? [{ href: "/press", label: "Press kit" }] : []),
 ];
 ---
 <footer class="border-t border-line px-[5vw] pt-14 pb-10">

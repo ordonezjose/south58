@@ -30,6 +30,7 @@
       "featuredVideoUrl": "https://www.youtube.com/watch?v=l-fSoLcPIcw",
       "bookUsCopy": "Tell us the date. We'll bring the room up."
     },
+    "showPressKit": false,
     "pageIntros": {
       "band": "Four South Florida musicians who have been playing these rooms long enough to read them. Rock, alt and pop covers, played loud and played right.",
       "pics": "Live shots from the last year of shows. Got pics of us? Send them to {email}.",

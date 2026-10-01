@@ -113,6 +113,10 @@ const site = defineCollection({
       featuredVideoUrl: z.string().url().nullish(),
       bookUsCopy: z.string(),
     }),
+    // Off until the press material is ready: drops the page from both menus
+    // and tells search engines to leave it alone, so an unfinished page can't
+    // turn up in results before it launches.
+    showPressKit: z.boolean(),
     // The paragraph under each page's heading. Hardcoded, these drifted out
     // of step with the rest of the site — the band page still called it a
     // five-piece long after the lineup changed.

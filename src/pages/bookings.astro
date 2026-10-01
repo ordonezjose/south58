@@ -5,8 +5,10 @@ import { getEntry } from "astro:content";
 const site = await getEntry("site", "settings");
 if (!site) throw new Error("site.json settings entry is missing");
 
-// No form backend is wired up yet — see README "Bookings form" section.
-// Point this at a form service (Formspree, Web3Forms) or a Vercel Function.
+// Point this at a form service (Formspree, Web3Forms) or a Vercel Function to
+// turn the form on — see the README. Until it is set the page falls back to a
+// note telling visitors how to reach the band: whoever lands here is a venue
+// trying to book them, not someone who needs to hear which setting is missing.
 const formAction = import.meta.env.PUBLIC_BOOKING_FORM_ACTION;
 
 const fieldClass =
@@ -61,10 +63,13 @@ const labelClass = "font-condensed font-semibold text-[13px] tracking-[0.14em] u
       ) : (
         <div class="bg-surface border border-line p-7">
           <p class="m-0 text-ink-muted leading-relaxed">
-            The booking form isn't wired to a backend yet — set <code class="font-mono text-ink">PUBLIC_BOOKING_FORM_ACTION</code> (see the README) to a form
-            endpoint (Formspree, Web3Forms, a Vercel Function) to turn it on. Until then, reach us directly:
+            Our booking form is on its way. In the meantime, send us the date, the venue and
+            what you have in mind — we'll take it from there.
           </p>
-          <a href={`mailto:${site.data.email}`} class="inline-block mt-4 font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red px-8 py-4 hover:bg-red-hover transition-colors">Email us</a>
+          <a href={`mailto:${site.data.email}`} class="inline-block mt-5 font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red px-8 py-4 hover:bg-red-hover transition-colors">Email us</a>
+          <div class="mt-5 font-mono text-[11px] tracking-[0.14em] text-ink-dim">
+            Or call {site.data.phone}
+          </div>
         </div>
       )}
     </div>

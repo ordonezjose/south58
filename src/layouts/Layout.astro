@@ -7,9 +7,11 @@ import { getEntry } from "astro:content";
 interface Props {
   title: string;
   description?: string;
+  /** Keeps a page that isn't ready for an audience out of search results. */
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const site = await getEntry("site", "settings");
 if (!site) throw new Error("site.json settings entry is missing");
 
@@ -23,6 +25,7 @@ const umamiScriptUrl = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} · {site.data.bandName}</title>
     <meta name="description" content={description ?? site.data.tagline} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
