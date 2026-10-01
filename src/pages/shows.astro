@@ -71,8 +71,8 @@ const emptyPast = shows.ok ? copy.emptyPast : "Dates are temporarily unavailable
           <p class="p-6 text-ink-muted text-sm">{emptyUpcoming}</p>
         )}
         {upcoming.map((show) => (
-          <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-            <div class="max-w-[180px]">
+          <div class="grid gap-y-3 gap-x-5 items-center px-6 py-5.5 border-b border-line min-[700px]:grid-cols-[minmax(110px,150px)_minmax(0,1fr)_auto]">
+            <div>
               <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-red">{dateFmt.format(show.date)}</div>
               <div class="font-mono text-[11px] text-ink-dim mt-1">{timeFmt.format(show.date)}</div>
             </div>
@@ -111,8 +111,8 @@ const emptyPast = shows.ok ? copy.emptyPast : "Dates are temporarily unavailable
           <p class="p-6 text-ink-muted text-sm">{emptyPast}</p>
         )}
         {past.map((show) => (
-          <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line opacity-60" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-            <div class="max-w-[180px]">
+          <div class="grid gap-y-3 gap-x-5 items-center px-6 py-5.5 border-b border-line opacity-60 min-[700px]:grid-cols-[minmax(110px,150px)_minmax(0,1fr)_auto]">
+            <div>
               <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-ink-muted">{dateFmt.format(show.date)}</div>
               <div class="font-mono text-[11px] text-ink-dim mt-1">{timeFmt.format(show.date)}</div>
             </div>
