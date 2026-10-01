@@ -227,6 +227,20 @@ export default config({
             }),
             bookUsCopy: fields.text({ label: '"Book us" copy', multiline: true }),
           }),
+          pageIntros: fields.object(
+            {
+              band: fields.text({ label: "Band page", multiline: true }),
+              pics: fields.text({
+                label: "Pics page",
+                description: "Write {email} anywhere in the text and the booking address appears there as a mail link.",
+                multiline: true,
+              }),
+              videos: fields.text({ label: "Videos page", multiline: true }),
+              songs: fields.text({ label: "Song list page", multiline: true }),
+              press: fields.text({ label: "Press kit page", multiline: true }),
+            },
+            { label: "Page intros", description: "The paragraph under each page's heading." }
+          ),
           showsPage: fields.object(
             {
               emptyUpcoming: fields.text({

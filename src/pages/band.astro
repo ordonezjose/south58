@@ -1,14 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 
 const members = (await getCollection("band")).sort((a, b) => a.data.order - b.data.order);
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
 ---
 <Layout title="The Band">
   <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
     <div class="h-1 w-[120px] bg-red mb-6"></div>
     <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">The band</h1>
-    <p class="text-[clamp(18px,2.2vw,24px)] text-ink-soft max-w-[640px] mt-5 leading-snug">Four South Florida musicians who have been playing these rooms long enough to read them. Rock, alt and pop covers, played loud and played right.</p>
+    <p class="text-[clamp(18px,2.2vw,24px)] text-ink-soft max-w-[640px] mt-5 leading-snug">{site.data.pageIntros.band}</p>
     <div class="grid gap-5 mt-12 items-start" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
       {members.map((member) => (
         <div>

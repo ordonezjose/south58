@@ -113,6 +113,16 @@ const site = defineCollection({
       featuredVideoUrl: z.string().url().nullish(),
       bookUsCopy: z.string(),
     }),
+    // The paragraph under each page's heading. Hardcoded, these drifted out
+    // of step with the rest of the site — the band page still called it a
+    // five-piece long after the lineup changed.
+    pageIntros: z.object({
+      band: z.string(),
+      pics: z.string(),
+      videos: z.string(),
+      songs: z.string(),
+      press: z.string(),
+    }),
     showsPage: z.object({
       emptyUpcoming: z.string(),
       emptyPast: z.string(),

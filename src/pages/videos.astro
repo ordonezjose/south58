@@ -1,15 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PlaceholderMedia from "../components/PlaceholderMedia.astro";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 
 const videos = (await getCollection("videos")).sort((a, b) => a.data.order - b.data.order);
+const site = await getEntry("site", "settings");
+if (!site) throw new Error("site.json settings entry is missing");
 ---
 <Layout title="Videos">
   <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
     <div class="h-1 w-[120px] bg-red mb-6"></div>
     <h1 class="font-display uppercase text-[clamp(40px,7vw,84px)] leading-[0.9] tracking-[-0.03em] m-0">Videos</h1>
-    <p class="text-[17px] text-ink-muted max-w-[520px] mt-4.5 leading-relaxed">Live sets, rehearsal takes and the road. Drop the YouTube embeds into these frames.</p>
+    <p class="text-[17px] text-ink-muted max-w-[520px] mt-4.5 leading-relaxed">{site.data.pageIntros.videos}</p>
     <div class="grid gap-5 mt-10 items-start" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
       {videos.map((video) => (
         <figure class="m-0 bg-surface border border-line">

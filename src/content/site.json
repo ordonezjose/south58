@@ -30,6 +30,13 @@
       "featuredVideoUrl": "https://www.youtube.com/watch?v=l-fSoLcPIcw",
       "bookUsCopy": "Tell us the date. We'll bring the room up."
     },
+    "pageIntros": {
+      "band": "Four South Florida musicians who have been playing these rooms long enough to read them. Rock, alt and pop covers, played loud and played right.",
+      "pics": "Live shots from the last year of shows. Got pics of us? Send them to {email}.",
+      "videos": "Live sets, rehearsal takes and the road.",
+      "songs": "Ninety plus songs in rotation. Requests welcome — tell us what your room wants to hear.",
+      "press": "Everything a venue or promoter needs in one place. One-click download, or grab the pieces you need."
+    },
     "showsPage": {
       "emptyUpcoming": "No shows on the books yet — check back soon.",
       "emptyPast": "No past shows logged yet.",
