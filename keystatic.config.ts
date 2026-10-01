@@ -3,17 +3,12 @@ import { config, fields, collection, singleton } from "@keystatic/core";
 // Each collection here mirrors a Zod schema in src/content.config.ts; keep
 // both in sync when a field changes on either side.
 //
-// Storage follows whether the GitHub app has been set up. Until it is, the
-// panel reads and writes the files in src/content/ and only runs under
-// `astro dev`. Once the app slug is present, saving commits to the repo
-// instead, which is what lets the panel run on the live site — and GitHub
-// then supplies the login, so only people with write access can edit.
-// See .env.example for how to set it up.
-const githubAppSlug = import.meta.env.PUBLIC_KEYSTATIC_GITHUB_APP_SLUG;
-
-const storage = githubAppSlug
-  ? ({ kind: "github", repo: { owner: "ordonezjose", name: "south58" } } as const)
-  : ({ kind: "local" } as const);
+// Saving commits to the repo rather than writing local files, which is what
+// lets the panel run on the live site: GitHub supplies the login, so only
+// people with write access to the repo can edit. It also means the panel
+// shows its sign-in button before the GitHub app exists — that button is how
+// the app gets created in the first place. See .env.example.
+const storage = { kind: "github", repo: { owner: "ordonezjose", name: "south58" } } as const;
 // A section's full-bleed background: a video URL or an image that can be
 // parallaxed. `slug` keeps each section's uploads in their own folder.
 const backgroundMediaField = (label: string, slug: string) =>
