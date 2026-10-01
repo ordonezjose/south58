@@ -270,7 +270,12 @@ export default config({
           ),
           bookings: fields.object({
             intro: fields.text({ label: "Bookings intro", multiline: true }),
-            formNote: fields.text({ label: "Form note" }),
+            formNote: fields.text({ label: "Form note", description: "The small line beside the send button." }),
+            confirmation: fields.text({
+              label: "Confirmation message",
+              description: "Replaces the form once a request has been sent.",
+              multiline: true,
+            }),
           }),
         }),
       },

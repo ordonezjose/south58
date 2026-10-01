@@ -136,6 +136,7 @@ const site = defineCollection({
     bookings: z.object({
       intro: z.string(),
       formNote: z.string(),
+      confirmation: z.string(),
     }),
   }),
 });

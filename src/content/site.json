@@ -46,7 +46,8 @@
     },
     "bookings": {
       "intro": "Tell us the date, the room and the vibe. We answer every request within 48 hours.",
-      "formNote": "Goes straight to rock@south58band.com"
+      "formNote": "Goes straight to rock@south58band.com",
+      "confirmation": "Thanks — your request is in. We answer every booking enquiry within 48 hours, so keep an eye on your inbox."
     }
   }
 }

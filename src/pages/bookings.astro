@@ -30,7 +30,28 @@ const labelClass = "font-condensed font-semibold text-[13px] tracking-[0.14em] u
       </div>
 
       {formAction ? (
-        <form method="POST" action={formAction} class="grid gap-5" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <Fragment>
+        <form
+          id="booking-form"
+          method="POST"
+          action={formAction}
+          class="grid gap-5"
+          style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"
+        >
+          {/* Formspree reads `subject` for the notification's subject line and
+              takes the reply-to from the field named `email`. */}
+          <input type="hidden" name="subject" value={`Booking request — ${site.data.bandName}`} />
+          {/* Honeypot: Formspree drops anything that fills `_gotcha`. It has to
+              be a visible input type hidden with CSS — a type="hidden" input is
+              skipped by most bots, which defeats the trap. */}
+          <input
+            type="text"
+            name="_gotcha"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            class="hidden"
+          />
           <label class="flex flex-col gap-2">
             <span class={labelClass}>Your name</span>
             <input type="text" name="name" placeholder="Jane Doe" required class={fieldClass} />
@@ -56,10 +77,20 @@ const labelClass = "font-condensed font-semibold text-[13px] tracking-[0.14em] u
             <input type="text" name="source" placeholder="Saw us live, referral, Instagram…" class={fieldClass} />
           </label>
           <div class="col-span-full flex flex-wrap gap-3.5 items-center">
-            <button type="submit" class="font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red border-0 px-8 py-4 cursor-pointer hover:bg-red-hover transition-colors">Send request</button>
+            <button type="submit" class="font-condensed font-bold text-[15px] tracking-[0.12em] uppercase text-white bg-red border-0 px-8 py-4 cursor-pointer hover:bg-red-hover transition-colors disabled:opacity-60 disabled:cursor-wait">Send request</button>
             <span class="text-[13px] text-ink-dim">{site.data.bookings.formNote}</span>
           </div>
+          <p data-form-error hidden class="col-span-full m-0 text-[15px] text-red-hover leading-relaxed">
+            That didn't go through. Please try again, or email us at{" "}
+            <a href={`mailto:${site.data.email}`}>{site.data.email}</a>.
+          </p>
         </form>
+
+        <div data-form-sent hidden class="bg-surface border border-line p-7">
+          <div class="h-1 w-[60px] bg-red mb-5"></div>
+          <p class="m-0 text-[17px] text-ink-soft leading-relaxed">{site.data.bookings.confirmation}</p>
+        </div>
+        </Fragment>
       ) : (
         <div class="bg-surface border border-line p-7">
           <p class="m-0 text-ink-muted leading-relaxed">
@@ -75,3 +106,50 @@ const labelClass = "font-condensed font-semibold text-[13px] tracking-[0.14em] u
     </div>
   </div>
 </Layout>
+
+<script>
+  // Submitting straight to Formspree would land the visitor on Formspree's own
+  // confirmation page — sending a venue off the site mid-enquiry — and keeping
+  // them here by redirecting back is a paid feature. Posting it from here
+  // instead keeps them on the page. Without JavaScript the form still submits
+  // normally, so the request always gets through.
+  const form = document.querySelector<HTMLFormElement>("#booking-form");
+  const sent = document.querySelector<HTMLElement>("[data-form-sent]");
+  const failure = document.querySelector<HTMLElement>("[data-form-error]");
+
+  if (form && sent && failure) {
+    const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
+    const label = button?.textContent ?? "";
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      failure.hidden = true;
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Sending…";
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          // Formspree answers with JSON instead of a redirect when asked to.
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        form.hidden = true;
+        sent.hidden = false;
+        sent.scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch {
+        // The message carries the email address, so a failure here still
+        // leaves the visitor with a way to reach the band.
+        failure.hidden = false;
+        if (button) {
+          button.disabled = false;
+          button.textContent = label;
+        }
+      }
+    });
+  }
+</script>
