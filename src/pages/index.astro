@@ -3,24 +3,31 @@ import Layout from "../layouts/Layout.astro";
 import BackgroundMedia from "../components/BackgroundMedia.astro";
 import FeaturedVideo from "../components/FeaturedVideo.astro";
 import { hasMedia } from "../lib/background-media";
-import { showDateFormatter, startOfToday } from "../lib/show-dates";
+import { showDateFormatter } from "../lib/show-dates";
+import { getShows } from "../lib/bandsintown";
 import { getCollection, getEntry } from "astro:content";
+
+// Rendered per request so the next dates stay current without a redeploy; the
+// CDN still serves it like a static page between refreshes.
+export const prerender = false;
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=900, stale-while-revalidate=3600"
+);
 
 const site = await getEntry("site", "settings");
 if (!site) throw new Error("site.json settings entry is missing");
 
-const allShows = await getCollection("shows");
-const today = startOfToday();
-const nextShows = allShows
-  .filter((s) => s.data.date >= today)
-  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
-  .slice(0, 3);
+const shows = await getShows();
+const nextShows = shows.ok ? shows.upcoming.slice(0, 3) : [];
 
 const testimonials = (await getCollection("testimonials")).sort(
   (a, b) => a.data.order - b.data.order
 );
 
 const monthFmt = showDateFormatter({ month: "short" });
+const timeFmt = showDateFormatter({ hour: "numeric", minute: "2-digit" });
 
 const heroMedia = site.data.home.heroMedia;
 const whoWeAreMedia = site.data.home.whoWeAreMedia;
@@ -62,11 +69,18 @@ const whoWeAreMedia = site.data.home.whoWeAreMedia;
           {nextShows.map((show) => (
             <div class="bg-surface px-[22px] py-6 flex flex-col gap-2.5">
               <div class="font-display text-[32px] leading-none">
-                {show.data.date.getUTCDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.data.date).toUpperCase()}</span>
+                {show.date.getUTCDate()}<span class="text-[15px] text-red ml-2">{monthFmt.format(show.date).toUpperCase()}</span>
               </div>
-              <div class="font-condensed font-semibold text-xl uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
-              <div class="text-sm text-ink-muted">{show.data.city} · {show.data.time}</div>
-              <a href="/bookings" class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white mt-1.5 hover:text-red-hover transition-colors">RSVP →</a>
+              <div class="font-condensed font-semibold text-xl uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
+              <div class="text-sm text-ink-muted">{show.city} · {timeFmt.format(show.date)}</div>
+              <a
+                href={show.ticketUrl ?? show.eventUrl}
+                target="_blank"
+                rel="noopener"
+                class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white mt-1.5 hover:text-red-hover transition-colors"
+              >
+                {show.ticketUrl ? "Tickets →" : "RSVP →"}
+              </a>
             </div>
           ))}
         </div>

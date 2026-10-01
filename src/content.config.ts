@@ -7,16 +7,8 @@ import { glob, file } from "astro/loaders";
 // these collections. Required fields here mean a missing one fails the
 // build instead of shipping a broken page.
 
-const shows = defineCollection({
-  loader: glob({ pattern: "**/*.json", base: "./src/content/shows" }),
-  schema: z.object({
-    date: z.coerce.date(),
-    time: z.string(),
-    venue: z.string(),
-    city: z.string(),
-  }),
-});
-
+// No shows collection: tour dates come from Bandsintown at request time —
+// see src/lib/bandsintown.ts.
 const songs = defineCollection({
   loader: glob({ pattern: "**/*.json", base: "./src/content/songs" }),
   schema: z.object({
@@ -125,4 +117,4 @@ const site = defineCollection({
   }),
 });
 
-export const collections = { shows, songs, videos, pics, band, press, testimonials, site };
+export const collections = { songs, videos, pics, band, press, testimonials, site };

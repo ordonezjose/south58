@@ -10,10 +10,12 @@ import react from "@astrojs/react";
 // Keystatic ("local" storage) has no auth of its own — it's meant for local
 // editing only, per the brief. It injects /keystatic and /api/keystatic as
 // non-prerendered (SSR) routes regardless of `output`, so it's only wired in
-// for `astro dev`; a production build (Vercel) omits it, leaving every page
-// fully static. @astrojs/react is required because Keystatic's admin UI is a
-// React app mounted with `client:only="react"`; @astrojs/vercel is required
-// only because those SSR routes need *an* adapter to run at all in dev/build.
+// for `astro dev` and a production build omits it. @astrojs/react is required
+// because Keystatic's admin UI is a React app mounted with client:only.
+//
+// Every page is still prerendered except / and /shows, which opt out so their
+// Bandsintown dates stay current without a redeploy — @astrojs/vercel is what
+// runs those two in production, and they lean on the CDN for caching.
 const isDev = process.env.NODE_ENV !== "production";
 
 // Keystatic's admin UI ships no busy state for picking a file, which reads as

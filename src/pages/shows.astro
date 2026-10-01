@@ -1,20 +1,42 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getCollection, getEntry } from "astro:content";
-import { showDateFormatter, startOfToday } from "../lib/show-dates";
+import { getEntry } from "astro:content";
+import { showDateFormatter } from "../lib/show-dates";
+import { getShows } from "../lib/bandsintown";
+
+// Dates come from Bandsintown at request time rather than at build time, so
+// adding a show there puts it on the site without a redeploy. The CDN holds
+// the rendered page for 15 minutes and refreshes it in the background, which
+// keeps this as cheap to serve as the static pages around it.
+export const prerender = false;
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=900, stale-while-revalidate=3600"
+);
 
 const site = await getEntry("site", "settings");
 if (!site) throw new Error("site.json settings entry is missing");
 const copy = site.data.showsPage;
 
-const allShows = (await getCollection("shows")).sort(
-  (a, b) => a.data.date.getTime() - b.data.date.getTime()
-);
-const today = startOfToday();
-const upcoming = allShows.filter((s) => s.data.date >= today);
-const past = allShows.filter((s) => s.data.date < today).reverse();
+// Bandsintown holds the band's whole history — nearly 300 dates back to 2019 —
+// and the past tab is there as proof they play constantly, not as an archive.
+// Only the most recent stretch is rendered; the rest stay a click away on
+// Bandsintown itself.
+const PAST_SHOWN = 12;
+
+const shows = await getShows();
+const upcoming = shows.ok ? shows.upcoming : [];
+const past = shows.ok ? shows.past.slice(0, PAST_SHOWN) : [];
+const pastTotal = shows.ok ? shows.past.length : 0;
 
 const dateFmt = showDateFormatter({ weekday: "short", month: "short", day: "numeric" });
+const timeFmt = showDateFormatter({ hour: "numeric", minute: "2-digit" });
+
+// A failed feed is not the same as an empty calendar, and saying "no shows"
+// when the truth is "we could not reach Bandsintown" would be a lie.
+const emptyUpcoming = shows.ok ? copy.emptyUpcoming : "Dates are temporarily unavailable — check back shortly.";
+const emptyPast = shows.ok ? copy.emptyPast : "Dates are temporarily unavailable — check back shortly.";
 ---
 <Layout title="Shows">
   <div class="mx-auto max-w-content px-[5vw] pt-[72px] pb-[110px]">
@@ -46,20 +68,27 @@ const dateFmt = showDateFormatter({ weekday: "short", month: "short", day: "nume
 
       <div class="hidden peer-checked/upcoming:block basis-full border border-line mt-2">
         {upcoming.length === 0 && (
-          <p class="p-6 text-ink-muted text-sm">{copy.emptyUpcoming}</p>
+          <p class="p-6 text-ink-muted text-sm">{emptyUpcoming}</p>
         )}
         {upcoming.map((show) => (
           <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
             <div class="max-w-[180px]">
-              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-red">{dateFmt.format(show.data.date)}</div>
-              <div class="font-mono text-[11px] text-ink-dim mt-1">{show.data.time}</div>
+              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-red">{dateFmt.format(show.date)}</div>
+              <div class="font-mono text-[11px] text-ink-dim mt-1">{timeFmt.format(show.date)}</div>
             </div>
             <div class="min-w-0">
-              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
-              <div class="text-sm text-ink-muted mt-0.5">{show.data.city}</div>
+              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
+              <div class="text-sm text-ink-muted mt-0.5">{show.city}</div>
             </div>
             <div class="flex gap-2.5 flex-wrap justify-start">
-              <a href="/bookings" class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white bg-red px-[22px] py-[13px] hover:bg-red-hover transition-colors">RSVP</a>
+              <a
+                href={show.ticketUrl ?? show.eventUrl}
+                target="_blank"
+                rel="noopener"
+                class="font-condensed font-bold text-[13px] tracking-[0.12em] uppercase text-white bg-red px-[22px] py-[13px] hover:bg-red-hover transition-colors"
+              >
+                {show.ticketUrl ? "Tickets" : "RSVP"}
+              </a>
             </div>
           </div>
         ))}
@@ -71,26 +100,42 @@ const dateFmt = showDateFormatter({ weekday: "short", month: "short", day: "nume
 
       <div class="hidden peer-checked/past:block basis-full border border-line mt-2">
         {past.length === 0 && (
-          <p class="p-6 text-ink-muted text-sm">{copy.emptyPast}</p>
+          <p class="p-6 text-ink-muted text-sm">{emptyPast}</p>
         )}
         {past.map((show) => (
           <div class="grid gap-4 md:gap-6 items-center px-6 py-5.5 border-b border-line opacity-60" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
             <div class="max-w-[180px]">
-              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-ink-muted">{dateFmt.format(show.data.date)}</div>
-              <div class="font-mono text-[11px] text-ink-dim mt-1">{show.data.time}</div>
+              <div class="font-condensed font-bold text-sm tracking-[0.14em] uppercase text-ink-muted">{dateFmt.format(show.date)}</div>
+              <div class="font-mono text-[11px] text-ink-dim mt-1">{timeFmt.format(show.date)}</div>
             </div>
             <div class="min-w-0">
-              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.data.venue}</div>
-              <div class="text-sm text-ink-muted mt-0.5">{show.data.city}</div>
+              <div class="font-condensed font-semibold text-[22px] uppercase tracking-[0.04em] leading-tight">{show.venue}</div>
+              <div class="text-sm text-ink-muted mt-0.5">{show.city}</div>
             </div>
             <span class="font-mono text-[11px] tracking-[0.14em] text-ink-dim">PLAYED</span>
           </div>
         ))}
+        {pastTotal > PAST_SHOWN && (
+          <div class="px-6 py-5 border-b border-line">
+            <a
+              href="https://www.bandsintown.com/a/15393148?tab=past_dates"
+              target="_blank"
+              rel="noopener"
+              class="font-mono text-[11px] tracking-[0.16em] uppercase"
+            >
+              See all {pastTotal} dates we've played →
+            </a>
+          </div>
+        )}
         <div class="px-6 py-5.5 flex flex-wrap gap-4 items-center justify-between">
           <span class="text-[15px] text-ink-muted">{copy.bookingPrompt}</span>
           <a href="/bookings" class="font-condensed font-bold text-sm tracking-[0.12em] uppercase text-ink border border-line-strong px-6 py-3.5 hover:text-white hover:border-red transition-colors">{copy.bookingCta}</a>
         </div>
       </div>
     </div>
+
+    <p class="mt-6 font-mono text-[11px] tracking-[0.14em] uppercase text-ink-dim">
+      Dates powered by <a href="https://www.bandsintown.com/a/15393148" target="_blank" rel="noopener">Bandsintown</a>
+    </p>
   </div>
 </Layout>

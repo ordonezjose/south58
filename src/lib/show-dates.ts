@@ -1,15 +1,7 @@
-// Keystatic stores a show's date as a plain calendar day ("2026-09-17"), and
-// JavaScript parses a date-only string as midnight UTC. Reading that back in
-// the server's own zone lands on the day before for anywhere behind UTC — the
-// site renders in America/New_York, so every date showed up a day early. So
-// show dates are only ever formatted and compared in UTC.
-
+// A show's time is a wall clock at the venue, not an instant: Bandsintown
+// reports "2026-09-18T21:00:00" with no offset, meaning 9pm wherever the venue
+// is. Those parts are pinned to UTC when parsed (see lib/bandsintown.ts), so
+// every formatter has to read them back in UTC — formatting in the server's
+// own zone would shift the time, and a late show would slide to the day before.
 export const showDateFormatter = (options: Intl.DateTimeFormatOptions) =>
   new Intl.DateTimeFormat("en-US", { ...options, timeZone: "UTC" });
-
-// Today's calendar day at midnight UTC, lined up with how show dates are
-// stored so that a show happening today still counts as upcoming.
-export const startOfToday = () => {
-  const now = new Date();
-  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-};

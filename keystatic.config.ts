@@ -51,20 +51,8 @@ export default config({
     kind: "local",
   },
   collections: {
-    shows: collection({
-      label: "Shows",
-      path: "src/content/shows/*",
-      format: "json",
-      slugField: "slug",
-      schema: {
-        slug: fields.slug({ name: { label: "Slug" } }),
-        date: fields.date({ label: "Date" }),
-        time: fields.text({ label: "Time", description: '"9:00 PM" or "Played" for past shows' }),
-        venue: fields.text({ label: "Venue" }),
-        city: fields.text({ label: "City", description: '"Doral, FL"' }),
-      },
-    }),
-
+    // Tour dates are not here: they live in Bandsintown, which the band
+    // already keeps up to date and which feeds / and /shows directly.
     videos: collection({
       label: "Videos",
       path: "src/content/videos/*",
