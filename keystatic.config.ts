@@ -1,18 +1,19 @@
 import { config, fields, collection, singleton } from "@keystatic/core";
 
-// Local-mode Keystatic: content is read from and written straight to the
-// files in src/content/ — no external service, no auth, just the panel at
-// /keystatic while `astro dev` is running. Each collection here mirrors a
-// Zod schema in src/content.config.ts; keep both in sync when a field
-// changes on either side.
+// Each collection here mirrors a Zod schema in src/content.config.ts; keep
+// both in sync when a field changes on either side.
 //
-// NOTE: keystatic.com was unreachable from this sandbox (network policy),
-// so this file is built from the installed @keystatic/core / @keystatic/astro
-// package sources (type declarations + the integration's own code) rather
-// than the official walkthrough. The shape below matches the documented
-// config/collection/singleton/fields API, but if the panel's UX doesn't
-// match what you expected for a field, that's the part worth checking
-// against https://keystatic.com/docs yourself.
+// Storage follows whether the GitHub app has been set up. Until it is, the
+// panel reads and writes the files in src/content/ and only runs under
+// `astro dev`. Once the app slug is present, saving commits to the repo
+// instead, which is what lets the panel run on the live site — and GitHub
+// then supplies the login, so only people with write access can edit.
+// See .env.example for how to set it up.
+const githubAppSlug = import.meta.env.PUBLIC_KEYSTATIC_GITHUB_APP_SLUG;
+
+const storage = githubAppSlug
+  ? ({ kind: "github", repo: { owner: "ordonezjose", name: "south58" } } as const)
+  : ({ kind: "local" } as const);
 // A section's full-bleed background: a video URL or an image that can be
 // parallaxed. `slug` keeps each section's uploads in their own folder.
 const backgroundMediaField = (label: string, slug: string) =>
@@ -47,9 +48,7 @@ const backgroundMediaField = (label: string, slug: string) =>
   );
 
 export default config({
-  storage: {
-    kind: "local",
-  },
+  storage,
   collections: {
     // Tour dates are not here: they live in Bandsintown, which the band
     // already keeps up to date and which feeds / and /shows directly.
